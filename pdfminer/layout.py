@@ -380,9 +380,14 @@ class LTTextLineHorizontal(LTTextLine):
         objs = plane.find((self.x0, self.y0-d, self.x1, self.y1+d))
         return [obj for obj in objs
                 if (isinstance(obj, LTTextLineHorizontal) and
-                    abs(obj.height-self.height) < d and
-                    (abs(obj.x0-self.x0) < d or
-                     abs(obj.x1-self.x1) < d))]
+                    # Ensure they are vertically close
+                    abs(obj.height-self.height) < d and (
+                    # And that they have similar start or stop x positions
+                    abs(obj.x0-self.x0) < d or
+                    abs(obj.x1-self.x1) < d) or
+                    # Or that they intersect eachother horizontally.
+                    (obj.x0 < self.x0 and obj.x1 > self.x0) or
+                    (obj.x0 > self.x0 and obj.x0 < self.x1))]
 
 
 class LTTextLineVertical(LTTextLine):
